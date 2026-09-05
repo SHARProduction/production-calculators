@@ -1,0 +1,12 @@
+{
+  "unitSystem": "SI",
+  "replicationFactor": 2,
+  "transferCopies": 3,
+  "assets": [
+    {
+      "id": "master",
+      "size": 5000000000,
+      "versions": 2
+    }
+  ]
+}

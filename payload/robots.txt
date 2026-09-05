@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tools.sharprod.com/families/production-calculators/sitemap.xml

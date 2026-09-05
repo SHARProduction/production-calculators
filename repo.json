@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0.0",
+  "repository": "production-calculators",
+  "family": "calculators",
+  "state": "LOCAL_READY",
+  "publisher": {
+    "name": "SHAR Production",
+    "website": "https://sharprod.com/"
+  },
+  "assets": [
+    {
+      "asset_id": "shar-pe400-w01-19",
+      "slug": "aspect-ratio-safe-area-calculator",
+      "name": {
+        "en": "Aspect Ratio Safe-Area Calculator",
+        "ru": "Калькулятор safe area для форматов"
+      },
+      "code_license": "MIT",
+      "fixtures_license": "CC-BY-4.0"
+    },
+    {
+      "asset_id": "shar-pe400-w01-20",
+      "slug": "storage-transfer-estimator",
+      "name": {
+        "en": "Storage and Transfer Estimator",
+        "ru": "Калькулятор хранения и передачи"
+      },
+      "code_license": "MIT",
+      "fixtures_license": "CC-BY-4.0"
+    }
+  ]
+}

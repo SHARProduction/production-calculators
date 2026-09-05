@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "Cite this software using these metadata."
+title: "production-calculators"
+version: "1.0.0"
+date-released: "2026-09-05"
+authors:
+  - name: "SHAR Production"
+url: "https://sharprod.com/"
+license: MIT
