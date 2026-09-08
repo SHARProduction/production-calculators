@@ -1,1 +1,27 @@
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import {spawnSync} from 'node:child_process';const root=path.resolve(import.meta.dirname,'..'),meta=JSON.parse(fs.readFileSync(path.join(root,'repo.json')));test('exact manifest pair',()=>{assert.equal(meta.assets.length,2);const nums=meta.assets.map(x=>Number(x.asset_id.slice(-2)));assert.equal(nums[1],nums[0]+1);assert.equal(Math.ceil(nums[0]/2),Math.ceil(nums[1]/2));assert.ok(meta.assets.every(x=>x.code_license==='MIT'&&x.fixtures_license==='CC-BY-4.0'))});test('deterministic Cloudflare build',()=>{const r=spawnSync(process.execPath,['scripts/build.mjs','--check'],{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr)});test('both tools have EN/RU routes and core',()=>{for(const a of meta.assets){for(const l of ['en','ru']){const p=path.join(root,'public',a.slug,l,'index.html');assert.ok(fs.existsSync(p));const h=fs.readFileSync(p,'utf8');assert.match(h,new RegExp(`<html lang=\"${l}\"`));assert.match(h,/name=\"robots\" content=\"noindex,nofollow\"/);assert.doesNotMatch(h,/rel=\"canonical\"|hreflang=|application\/ld\+json/);assert.match(h,/SHAR Production/);assert.doesNotMatch(h,/(google-analytics|<form\b|sendBeacon)/i)}}});test('repository policy files and static deployment config',()=>{for(const f of ['README.md','README.ru.md','LICENSE','LICENSE-CC-BY-4.0','LICENSE-STATUS.md','CHANGELOG.md','CITATION.cff','SECURITY.md','CONTRIBUTING.md','wrangler.toml','public/_headers','public/robots.txt','public/sitemap.xml'])assert.ok(fs.existsSync(path.join(root,f)),f);assert.match(fs.readFileSync(path.join(root,'wrangler.toml'),'utf8'),/directory = \"\.\/public\"/) });test('no external processing in browser scripts',()=>{for(const a of meta.assets){const dir=path.join(root,'public',a.slug);for(const f of fs.readdirSync(dir,{recursive:true,withFileTypes:true}))if(f.isFile()&&/\.(js|mjs)$/.test(f.name)){const s=fs.readFileSync(path.join(f.parentPath,f.name),'utf8');assert.doesNotMatch(s,/(fetch\(|XMLHttpRequest|sendBeacon|localStorage|document\.cookie)/)}}});
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+
+const root = path.resolve(import.meta.dirname, '..');
+const meta = JSON.parse(fs.readFileSync(path.join(root, 'repo.json')));
+const base = 'https://sharproduction.github.io/production-calculators';
+
+test('manifest keeps the paired MIT and CC-BY fixtures', () => {
+  assert.equal(meta.assets.length, 2);
+  assert.ok(meta.assets.every((asset) => asset.code_license === 'MIT' && asset.fixtures_license === 'CC-BY-4.0'));
+});
+
+test('Pages output is deterministic and exact for both languages', () => {
+  const build = spawnSync(process.execPath, ['scripts/build.mjs', '--check'], { cwd: root, encoding: 'utf8' });
+  assert.equal(build.status, 0, build.stderr);
+  for (const asset of meta.assets) for (const language of ['en', 'ru']) {
+    const file = path.join(root, 'public', asset.slug, language, 'index.html');
+    const html = fs.readFileSync(file, 'utf8');
+    const url = `${base}/${asset.slug}/${language}/`;
+    assert.match(html, /name="robots" content="index,follow"/);
+    assert.match(html, new RegExp(`rel="canonical" href="${url}"`));
+    assert.match(html, /SHAR Production/);
+  }
+});
